@@ -6,47 +6,84 @@ metadata:
     com.job.service: mysql-db
     tier: mysql
 spec:
-  selector: 
+  replicas: 1
+  selector:
     matchLabels:
       com.job.service: mysql-db
   strategy:
     type: Recreate
   template:
     metadata:
-      labels: 
+      labels:
         com.job.service: mysql-db
         tier: mysql
     spec:
       serviceAccountName: default
+      terminationGracePeriodSeconds: 30
       containers:
-        - name: mysql-db
-          image: mysql
-          imagePullPolicy: "IfNotPresent"
-          env:
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-credentials   # mesmo nome do Secret
-                  key: root
-            - name: MYSQL_USER
-              value: admin
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-credentials
-                  key: admin
-          ports:
-            - name: mysql
-              containerPort: 3306
-          volumeMounts:
-            - name: mysql-storage
-              mountPath: /var/lib/mysql
-            - name: mysql-initdb
-              mountPath: /docker-entrypoint-initdb.d
-      volumes:
+      - name: mysql-db
+        image: mysql:8.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: root
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: admin_user    
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: admin_password 
+        ports:
+        - name: mysql
+          containerPort: 3306
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "mysql -u root -p${MYSQL_ROOT_PASSWORD} -e 'SELECT 1'"
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+        volumeMounts:
         - name: mysql-storage
-          persistentVolumeClaim:
-            claimName: mysql-pv-claim
+          mountPath: /var/lib/mysql
         - name: mysql-initdb
-          configMap:
-            name: mysql-init-script    
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
+      - name: mysql-initdb
+        configMap:
+          name: mysql-init-script
+          defaultMode: 0444
