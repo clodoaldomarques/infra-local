@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  labels:
+    com.job.service: mysql-db
+    tier: mysql
+spec:
+  selector: 
+    matchLabels:
+      com.job.service: mysql-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels: 
+        com.job.service: mysql-db
+        tier: mysql
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: mysql-db
+          image: mysql
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-credentials   # mesmo nome do Secret
+                  key: root
+            - name: MYSQL_USER
+              value: admin
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-credentials
+                  key: admin
+          ports:
+            - name: mysql
+              containerPort: 3306
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+            - name: mysql-initdb
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
+        - name: mysql-initdb
+          configMap:
+            name: mysql-init-script    

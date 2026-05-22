@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama-deployment
+  labels:
+    com.job.service: ollama-ia
+    tier: ollama
+spec:
+  selector:
+    matchLabels:
+      com.job.service: ollama-ia
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        com.job.service: ollama-ia
+        tier: ollama
+    spec:
+      containers:
+        - name: ollama-ia
+          image: ollama/ollama:latest
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: OLLAMA_HOST
+              value: "0.0.0.0"
+          ports:
+            - containerPort: 11434
+          volumeMounts:
+            - name: ollama-storage
+              mountPath: /root/.ollama
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "1"
+            limits:
+              memory: "5Gi"
+              cpu: "2"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 11434
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 11434
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: ollama-storage
+          persistentVolumeClaim:
+            claimName: ollama-pv-claim

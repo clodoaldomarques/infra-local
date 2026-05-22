@@ -1,0 +1,99 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    com.job.service: localstack-deployment
+  name: localstack-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      com.job.service: localstack-deployment
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        com.job.service: localstack-deployment
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: localstack-main
+          image: localstack/localstack:3.7.0
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_DEFAULT_REGION
+              value: 'us-east-1'
+            - name: SERVICES
+              value: 'sqs,sns,dynamodb'
+            # PERSISTÊNCIA ATIVADA – dados salvos no PVC
+            - name: PERSISTENCE
+              value: "1"
+            - name: DATA_DIR
+              value: "/var/lib/localstack"
+          ports:
+            - containerPort: 4566
+            - containerPort: 4567
+            - containerPort: 4568
+            - containerPort: 4569
+            - containerPort: 4570
+            - containerPort: 4571
+            - containerPort: 4572
+            - containerPort: 4573
+            - containerPort: 4574
+            - containerPort: 4575
+            - containerPort: 4576
+            - containerPort: 4577
+            - containerPort: 4578
+            - containerPort: 4579
+            - containerPort: 4580
+            - containerPort: 4581
+            - containerPort: 4582
+            - containerPort: 4583
+            - containerPort: 4584
+            - containerPort: 4585
+            - containerPort: 4586
+            - containerPort: 4587
+            - containerPort: 4588
+            - containerPort: 4589
+            - containerPort: 4590
+            - containerPort: 4591
+            - containerPort: 4592
+            - containerPort: 4593
+            - containerPort: 4594
+            - containerPort: 4595
+            - containerPort: 4596
+            - containerPort: 4597
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 4566
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 4566
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 10
+          volumeMounts:
+            - name: localstack-storage
+              mountPath: /var/lib/localstack
+      restartPolicy: Always
+      volumes:
+        - name: localstack-storage
+          persistentVolumeClaim:
+            claimName: localstack-claim

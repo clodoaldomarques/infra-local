@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ollama-setup
+  labels:
+    com.job.service: ollama-ia
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: setup
+          image: ollama/ollama:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              # Inicia o servidor Ollama em segundo plano
+              echo "Iniciando servidor Ollama..."
+              ollama serve &
+              
+              # Aguarda o servidor ficar disponível
+              until ollama list > /dev/null 2>&1; do
+                echo "Aguardando Ollama server..."
+                sleep 2
+              done
+              
+              # 1. Baixa o modelo base (se já existir, não baixa novamente)
+              echo "Baixando modelo base qwen2.5-coder:1.5b ..."
+              ollama pull qwen2.5-coder:1.5b
+              
+              # 2. Copia o Modelfile do ConfigMap
+              cp /config/Modelfile /tmp/Modelfile
+              
+              # 3. Cria o modelo customizado (Griphook)
+              echo "Criando modelo customizado: Griphook"
+              ollama create griphook -f /tmp/Modelfile
+              
+              echo "Modelo Griphook criado com sucesso!"
+              echo "Modelos disponíveis:"
+              ollama list
+          volumeMounts:
+            - name: ollama-storage
+              mountPath: /root/.ollama
+            - name: modelfile-config
+              mountPath: /config
+      volumes:
+        - name: ollama-storage
+          persistentVolumeClaim:
+            claimName: ollama-pv-claim
+        - name: modelfile-config
+          configMap:
+            name: ollama-modelfile

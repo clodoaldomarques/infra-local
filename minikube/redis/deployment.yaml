@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  labels:
+    com.job.service: redis
+spec:
+  selector:
+    matchLabels:
+      com.job.service: redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        com.job.service: redis
+    spec:
+      serviceAccountName: default
+      containers:
+      - name: master
+        image: redis
+        ports:
+        - containerPort: 6379
