@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector-deployment
+  labels:
+    com.job.service: otel-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      com.job.service: otel-collector
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        com.job.service: otel-collector
+    spec:
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: otel-collector
+        image: otel/opentelemetry-collector-contrib:0.120.0   # use a versão estável mais recente
+        imagePullPolicy: IfNotPresent
+        args:
+          - --config=/conf/config.yaml
+        ports:
+        - name: otlp-grpc
+          containerPort: 4317
+          protocol: TCP
+        - name: otlp-http
+          containerPort: 4318
+          protocol: TCP
+        # Opcional: métricas prometheus do próprio collector (porta 8888)
+        - name: metrics
+          containerPort: 8888
+          protocol: TCP
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 13133        # endpoint de health check do collector (extensão health_check)
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 13133
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: config
+          mountPath: /conf
+      volumes:
+      - name: config
+        configMap:
+          name: otel-collector-config

@@ -7,8 +7,10 @@ data:
     -- Criação das bases de dados
     CREATE DATABASE IF NOT EXISTS balances;
     CREATE DATABASE IF NOT EXISTS ledger;
+    CREATE DATABASE IF NOT EXISTS zipkin;
 
     -- Criação de um usuário e concessão de privilégios
     GRANT ALL PRIVILEGES ON balances.* TO 'admin'@'%';
     GRANT ALL PRIVILEGES ON ledger.* TO 'admin'@'%';
+    GRANT ALL PRIVILEGES ON zipkin.* TO 'admin'@'%';
     FLUSH PRIVILEGES;

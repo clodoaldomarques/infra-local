@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zipkin-config
+  labels:
+    com.job.service: zipkin
+data:
+  QUERY_LOOKBACK: "604800000"
+  MYSQL_MAX_CONNECTIONS: "10"
+  STORAGE_TYPE: "mysql"
+  # Adicione outras configurações aqui se necessário

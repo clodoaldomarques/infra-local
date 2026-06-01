@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zipkin-deployment
+  labels:
+    com.job.service: zipkin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zipkin
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: zipkin
+    spec:
+      containers:
+      - name: zipkin
+        image: openzipkin/zipkin:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: STORAGE_TYPE
+          value: "mysql"
+        - name: MYSQL_HOST
+          value: "mysql-service"
+        - name: MYSQL_DB
+          value: "zipkin"
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: admin_user
+        - name: MYSQL_PASS
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: admin_password
+        - name: MYSQL_MAX_CONNECTIONS
+          value: "10"
+        - name: QUERY_LOOKBACK
+          value: "604800000"  # 7 dias em milissegundos
+        ports:
+        - containerPort: 9411
+          name: http
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 9411
+          initialDelaySeconds: 90
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 9411
+          initialDelaySeconds: 90
+          periodSeconds: 5

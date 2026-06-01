@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-config
+data:
+  config.yaml: |
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+
+    processors:
+      batch:
+        timeout: 1s
+        send_batch_size: 1024
+
+    exporters:
+      debug:
+        verbosity: detailed
+      zipkin:
+        endpoint: "http://zipkin-service:9411/api/v2/spans"
+        format: "json"
+        tls:
+          insecure: true
+
+    service:
+      extensions: [health_check]
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [debug, zipkin]
+        metrics:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [debug]
+        logs:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [debug]

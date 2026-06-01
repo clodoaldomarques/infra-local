@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: otel-collector-service
+  labels:
+    com.job.service: otel-collector
+spec:
+  type: NodePort          # mude para ClusterIP se for acessado internamente apenas
+  ports:
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+      nodePort: 30417     # opcional, se quiser fixar (range padrão: 30000-32767)
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
+      nodePort: 30418
+    - name: metrics       # expõe métricas do próprio collector (Prometheus)
+      port: 8888
+      targetPort: 8888
+      nodePort: 30888
+  selector:
+    com.job.service: otel-collector
