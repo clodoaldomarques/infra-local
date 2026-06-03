@@ -24,9 +24,12 @@ data:
     exporters:
       debug:
         verbosity: detailed
-      zipkin:
-        endpoint: "http://zipkin-service:9411/api/v2/spans"
-        format: "json"
+      prometheus:
+        endpoint: "http://prometheus-service:8889"
+      loki:
+        endpoint: "http://loki-service:3100/loki/api/v1/push"
+      tempo:
+        endpoint: "http://tempo-service:3200"
         tls:
           insecure: true
 
@@ -36,12 +39,16 @@ data:
         traces:
           receivers: [otlp]
           processors: [batch]
-          exporters: [debug, zipkin]
+          exporters: [debug, tempo]
         metrics:
           receivers: [otlp]
           processors: [batch]
-          exporters: [debug]
+          exporters: [debug, prometheus]
         logs:
           receivers: [otlp]
           processors: [batch]
-          exporters: [debug]
+          exporters: [debug, loki]
+
+
+
+
