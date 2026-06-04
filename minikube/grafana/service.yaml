@@ -10,6 +10,6 @@ spec:
     - port: 3000
       name: web
       targetPort: 3000
-      nodePort: 30300   # ajuste conforme disponível (range 30000-32767)
+      nodePort: 30300
   selector:
     com.job.service: grafana

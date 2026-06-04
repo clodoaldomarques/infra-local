@@ -16,9 +16,7 @@ apply:
 	kubectl apply -f minikube/mysql/
 	kubectl apply -f minikube/ollama/
 	kubectl apply -f minikube/redis/
-	kubectl apply -f minikube/collector/
-	kubectl apply -f minikube/loki/
-	kubectl apply -f minikube/tempo/
+	kubectl apply -f minikube/otel/
 	kubectl apply -f minikube/prometheus/
 	kubectl apply -f minikube/grafana/
 
@@ -28,9 +26,7 @@ destroy:
 	kubectl delete -f minikube/mysql/ --ignore-not-found
 	kubectl delete -f minikube/ollama/ --ignore-not-found
 	kubectl delete -f minikube/redis/ --ignore-not-found
-	kubectl delete -f minikube/collector/ --ignore-not-found
-	kubectl delete -f minikube/loki/ --ignore-not-found
-	kubectl delete -f minikube/tempo/ --ignore-not-found
+	kubectl delete -f minikube/otel/ --ignore-not-found
 	kubectl delete -f minikube/prometheus/ --ignore-not-found
 	kubectl delete -f minikube/grafana/ --ignore-not-found
 
