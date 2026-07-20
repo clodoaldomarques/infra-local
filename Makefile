@@ -17,6 +17,8 @@ apply:
 	# kubectl apply -f minikube/ollama/
 	kubectl apply -f minikube/redis/
 	kubectl apply -f minikube/otel/
+	kubectl apply -f minikube/mockserver/
+
 
 destroy:
 	kubectl delete -f minikube/localstack/ --ignore-not-found
@@ -25,6 +27,7 @@ destroy:
 	# kubectl delete -f minikube/ollama/ --ignore-not-found
 	kubectl delete -f minikube/redis/ --ignore-not-found
 	kubectl delete -f minikube/otel/ --ignore-not-found
+	kubectl delete -f minikube/mockserver/ --ignore-not-found
 
 restart: destroy apply
 

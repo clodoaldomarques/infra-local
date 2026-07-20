@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mockserver-deployment
+  labels:
+    com.job.service: mockserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      com.job.service: mockserver
+  template:
+    metadata:
+      labels:
+        com.job.service: mockserver
+    spec:
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: mockserver
+        image: mockserver/mockserver:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: SERVER_PORT
+          value: "1080"
+        - name: MOCKSERVER_LOG_LEVEL
+          value: "INFO"
+        - name: MOCKSERVER_INITIALIZATION_JSON_PATH
+          value: "/config/expectations.json"
+        ports:
+        - name: http
+          containerPort: 1080
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: mockserver-config-volume
+          mountPath: /config
+          readOnly: true
+      volumes:
+      - name: mockserver-config-volume
+        configMap:
+          name: mockserver-config
+          defaultMode: 0444
