@@ -7,17 +7,17 @@ metadata:
 spec:
   selector:
     matchLabels:
-      com.job.service: ollama-ia
+      com.job.service: ollama
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        com.job.service: ollama-ia
+        com.job.service: ollama
         tier: ollama
     spec:
       containers:
-        - name: ollama-ia
+        - name: ollama
           image: ollama/ollama:latest
           imagePullPolicy: "IfNotPresent"
           env:

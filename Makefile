@@ -14,7 +14,6 @@ apply:
 	kubectl apply -f minikube/localstack/
 	kubectl apply -f minikube/stackport/
 	kubectl apply -f minikube/mysql/
-	kubectl apply -f minikube/ollama/
 	kubectl apply -f minikube/redis/
 	kubectl apply -f minikube/otel/
 	kubectl apply -f minikube/prometheus/
@@ -27,7 +26,6 @@ destroy:
 	kubectl delete -f minikube/localstack/ --ignore-not-found
 	kubectl delete -f minikube/stackport/ --ignore-not-found
 	kubectl delete -f minikube/mysql/ --ignore-not-found
-	kubectl delete -f minikube/ollama/ --ignore-not-found
 	kubectl delete -f minikube/redis/ --ignore-not-found
 	kubectl delete -f minikube/otel/ --ignore-not-found
 	kubectl delete -f minikube/prometheus/ --ignore-not-found
