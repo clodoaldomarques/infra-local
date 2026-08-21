@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    com.job.service: localstack-service
   name: localstack-service
+  labels:
+    com.job.service: localstack
 spec:
   type: NodePort
   ports:

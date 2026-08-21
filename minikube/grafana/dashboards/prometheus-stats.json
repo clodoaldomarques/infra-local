@@ -1,0 +1,39 @@
+{
+  "title": "Prometheus Stats",
+  "uid": "prometheus-stats",
+  "version": 1,
+  "timezone": "browser",
+  "editable": true,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Targets Up",
+      "type": "singlestat",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "count(up == 1)",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Scrape Duration",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "scrape_duration_seconds",
+          "legendFormat": "{{job}}"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 27
+}

@@ -3,13 +3,13 @@ kind: Service
 metadata:
   name: mockserver-service
   labels:
-    com.job.service: mockserver-service
+    com.job.service: mockserver
 spec:
   type: NodePort
   ports:
     - port: 1080
       targetPort: 1080
-      nodePort: 30080
+      nodePort: 30008
       name: http
   selector:
     com.job.service: mockserver

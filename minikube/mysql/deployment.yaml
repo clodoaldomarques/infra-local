@@ -3,8 +3,7 @@ kind: Deployment
 metadata:
   name: mysql-deployment
   labels:
-    com.job.service: mysql-db
-    tier: mysql
+    com.job.service: mysql
 spec:
   replicas: 1
   selector:

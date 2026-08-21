@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: redis-service
   labels:
-    com.job.service: redis-service
+    com.job.service: redis
 spec:
   type: NodePort
   ports:

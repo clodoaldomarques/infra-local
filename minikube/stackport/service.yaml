@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: stackport-service
   labels:
-    com.job.service: stackport-service
+    com.job.service: stackport
 spec:
   type: NodePort
   ports:
@@ -11,4 +11,4 @@ spec:
     targetPort: 8080
     nodePort: 30006   # Escolha uma porta livre no seu Minikube
   selector:
-    com.job.service: stackport
+    app: stackport

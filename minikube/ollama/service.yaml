@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: ollama-service
   labels:
-    com.job.service: ollama-service
+    com.job.service: ollama
 spec:
   type: NodePort
   ports:
@@ -11,5 +11,4 @@ spec:
       targetPort: 11434
       nodePort: 30007
   selector:
-    com.job.service: ollama-ia
-    tier: ollama
+    com.job.service: ollama

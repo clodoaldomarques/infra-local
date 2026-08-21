@@ -3,8 +3,7 @@ kind: Deployment
 metadata:
   name: ollama-deployment
   labels:
-    com.job.service: ollama-ia
-    tier: ollama
+    com.job.service: ollama
 spec:
   selector:
     matchLabels:

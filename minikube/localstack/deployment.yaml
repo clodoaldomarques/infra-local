@@ -3,18 +3,18 @@ kind: Deployment
 metadata:
   name: localstack-deployment
   labels:
-    com.job.service: localstack-deployment
+    com.job.service: localstack
 spec:
   replicas: 1
   selector:
     matchLabels:
-      com.job.service: localstack-deployment
+      com.job.service: localstack
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        com.job.service: localstack-deployment
+        com.job.service: localstack
     spec:
       serviceAccountName: default
       terminationGracePeriodSeconds: 30

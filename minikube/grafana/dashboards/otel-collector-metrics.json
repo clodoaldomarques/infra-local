@@ -1,0 +1,26 @@
+{
+  "title": "OTEL Collector Metrics",
+  "uid": "otel-collector-metrics",
+  "version": 1,
+  "timezone": "browser",
+  "editable": true,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Received OTLP Spans",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "otel_otlp_receiver_accepted_spans",
+          "legendFormat": "Accepted"
+        },
+        {
+          "expr": "otel_otlp_receiver_refused_spans",
+          "legendFormat": "Refused"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 27
+}

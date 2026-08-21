@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: mysql-service
   labels:
-    com.job.service: mysql-service
+    com.job.service: mysql
 spec:
   type: NodePort
   ports:

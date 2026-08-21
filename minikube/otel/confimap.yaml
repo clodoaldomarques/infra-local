@@ -4,10 +4,6 @@ metadata:
   name: otel-collector-config
 data:
   config.yaml: |
-    extensions:
-      health_check:
-        endpoint: 0.0.0.0:13133
-
     receivers:
       otlp:
         protocols:
@@ -17,27 +13,33 @@ data:
             endpoint: 0.0.0.0:4318
 
     processors:
-      memory_limiter:
-        check_interval: 1s
-        limit_mib: 512
       batch:
+        send_batch_size: 1000
+        timeout: 1s
 
     exporters:
       debug:
         verbosity: detailed
+      zipkin:
+        endpoint: "http://zipkin:9411/api/v2/spans"
+        format: "json"
+
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
 
     service:
       extensions: [health_check]
       pipelines:
-        logs:
-          receivers: [otlp]
-          processors: [memory_limiter, batch]
-          exporters: [debug]
         traces:
           receivers: [otlp]
-          processors: [memory_limiter, batch]
-          exporters: [debug]
+          processors: [batch]
+          exporters: [debug, zipkin]
         metrics:
           receivers: [otlp]
-          processors: [memory_limiter, batch]
+          processors: [batch]
+          exporters: [debug]
+        logs:
+          receivers: [otlp]
+          processors: [batch]
           exporters: [debug]

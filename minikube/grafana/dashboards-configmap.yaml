@@ -1,0 +1,72 @@
+apiVersion: v1
+data:
+  otel-collector-metrics.json: |-
+    {
+      "title": "OTEL Collector Metrics",
+      "uid": "otel-collector-metrics",
+      "version": 1,
+      "timezone": "browser",
+      "editable": true,
+      "panels": [
+        {
+          "id": 1,
+          "title": "Received OTLP Spans",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "otel_otlp_receiver_accepted_spans",
+              "legendFormat": "Accepted"
+            },
+            {
+              "expr": "otel_otlp_receiver_refused_spans",
+              "legendFormat": "Refused"
+            }
+          ]
+        }
+      ],
+      "schemaVersion": 27
+    }
+  prometheus-stats.json: |-
+    {
+      "title": "Prometheus Stats",
+      "uid": "prometheus-stats",
+      "version": 1,
+      "timezone": "browser",
+      "editable": true,
+      "panels": [
+        {
+          "id": 1,
+          "title": "Targets Up",
+          "type": "singlestat",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "count(up == 1)",
+              "format": "time_series"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "title": "Scrape Duration",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "scrape_duration_seconds",
+              "legendFormat": "{{job}}"
+            }
+          ]
+        }
+      ],
+      "schemaVersion": 27
+    }
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
