@@ -9,6 +9,6 @@ spec:
   ports:
   - port: 8080
     targetPort: 8080
-    nodePort: 30006   # Escolha uma porta livre no seu Minikube
+    nodePort: 30006
   selector:
-    app: stackport
+    com.job.service: stackport
