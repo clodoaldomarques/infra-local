@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zipkin-deployment
+  name: zipkin
   labels:
     com.job.service: zipkin
 spec:

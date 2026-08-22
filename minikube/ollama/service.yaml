@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ollama-service
+  name: ollama
   labels:
     com.job.service: ollama
 spec:

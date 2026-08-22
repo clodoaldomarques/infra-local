@@ -7,8 +7,17 @@ help:
 	@echo "  restart     - destroy + apply"
 	@echo "  mysql-logs  - Mostra logs do pod MySQL"
 
+
+
 encrypt:
 	echo -n $(pass) | base64 
+
+start: 
+	minikube start
+	minikube dashboard &
+
+stop: 
+	minikube stop
 
 apply:
 	kubectl apply -f minikube/localstack/
@@ -33,7 +42,11 @@ destroy:
 	kubectl delete -f minikube/mockserver/ --ignore-not-found
 	kubectl delete -f minikube/grafana/ --ignore-not-found
 
-restart: destroy apply
+reload: destroy apply
 
-mysql-logs:
-	kubectl logs -f deployment/mysql-deployment
+## docker
+up:
+	docker compose up -d
+
+down:
+	docker compose down -v

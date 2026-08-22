@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: localstack-service
+  name: localstack
   labels:
     com.job.service: localstack
 spec:
@@ -16,4 +16,4 @@ spec:
       targetPort: 4571
       nodePort: 30003
   selector:
-    com.job.service: localstack-deployment
+    com.job.service: localstack

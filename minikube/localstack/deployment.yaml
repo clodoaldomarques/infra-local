@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: localstack-deployment
+  name: localstack
   labels:
     com.job.service: localstack
 spec:
@@ -19,7 +19,7 @@ spec:
       serviceAccountName: default
       terminationGracePeriodSeconds: 30
       containers:
-      - name: localstack-main
+      - name: localstack
         image: localstack/localstack:3.7.0
         imagePullPolicy: IfNotPresent
         env:

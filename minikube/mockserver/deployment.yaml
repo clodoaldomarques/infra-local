@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mockserver-deployment
+  name: mockserver
   labels:
     com.job.service: mockserver
 spec:

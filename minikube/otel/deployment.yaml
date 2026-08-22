@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: otel-deployment
+  name: otel
   labels:
     com.job.service: otel
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: otel-collector
+      app: otel
   template:
     metadata:
       labels:
-        app: otel-collector
+        app: otel
     spec:
       containers:
-      - name: otel-collector
+      - name: otel
         image: otel/opentelemetry-collector-contrib:0.120.0
         args:
         - "--config=/conf/config.yaml"
