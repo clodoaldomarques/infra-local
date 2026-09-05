@@ -1,0 +1,165 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k6-script
+data:
+  script.js: |
+    import http from 'k6/http';
+    import { check, sleep } from 'k6';
+    import { Counter, Rate, Trend } from 'k6/metrics';
+    import { AWSConfig, SQSClient } from 'https://jslib.k6.io/aws/0.14.0/sqs.js';
+
+    const errorRate = new Rate('sqs_errors');
+    const sendDuration = new Trend('sqs_send_duration', true);
+    const sentMessages = new Counter('sqs_messages_sent');
+
+    const sqs = new SQSClient(
+      AWSConfig.fromEnvironment({
+        endpoint: __ENV.AWS_ENDPOINT || 'http://localstack:4566',
+      }),
+    );
+
+    function buildMessage() {
+      const id = `${__VU}-${__ITER}-${Date.now()}`;
+
+      return {
+        org_id: __ENV.TEST_ORG_ID || 'TN-k6-load-test',
+        account_id: Number(__ENV.TEST_ACCOUNT_ID || 100000),
+        accounting_date: new Date().toISOString().slice(0, 10),
+        amount: [
+          {
+            currency: 'BRL',
+            value: 1250.75,
+            description: 'TRANSACTION_AMOUNT',
+          },
+        ],
+        authorization: {
+          type: 'VISA',
+          id: Number(id.replace(/-/g, '').slice(-8)),
+          principal_amount: 1250.75,
+          currency: 'BRL',
+        },
+        correlation_id: `k6-${id}`,
+        event_date: new Date().toISOString(),
+        event_datetime: new Date().toISOString(),
+        id: Number(id.replace(/-/g, '').slice(-8)),
+        program: {
+          id: Number(__ENV.TEST_PROGRAM_ID || 12252),
+          name: 'K6 Load Test',
+          type: 'CREDIT',
+        },
+        transaction_type: {
+          id: 100000,
+          description: 'COMPRA A VISTA',
+          is_credit: false,
+          statement_post: true,
+        },
+        processing_code: __ENV.TEST_PROCESSING_CODE || '101',
+        processing_description: 'DEBIT PURCHASE',
+        rates: [],
+        tax: [
+          {
+            type: 'IOF',
+            value: 6.25,
+          },
+        ],
+        created_at: new Date().toISOString(),
+      };
+    }
+
+    export let options = {
+      stages: [
+        { duration: '1m', target: 10 },
+        { duration: '3m', target: 10 },
+        { duration: '1m', target: 25 },
+        { duration: '3m', target: 25 },
+        { duration: '1m', target: 0 },
+      ],
+      thresholds: {
+        sqs_errors: ['rate<0.1'],
+        sqs_send_duration: ['p(95)<500'],
+        checks: ['rate>0.9'],
+      },
+    };
+
+    export function setup() {
+      const orgID = __ENV.TEST_ORG_ID || 'TN-k6-load-test';
+      const url = `${__ENV.LEDGER_CONFIG_URL || 'http://ledger-config:5000'}/v1/ledger/org/activate`;
+      const response = http.post(
+        url,
+        JSON.stringify({ org_id: orgID }),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-cid': `k6-activate-${Date.now()}`,
+          },
+          timeout: '30s',
+        },
+      );
+
+      let alreadyActivated = false;
+      if (response.status === 400 && response.body) {
+        try {
+          alreadyActivated = response.json().message === `tenant ${orgID} was activated`;
+        } catch (error) {
+          alreadyActivated = false;
+        }
+      }
+
+      const activated = response.status === 200 || alreadyActivated;
+      check(response, {
+        'org de teste ativada': () => activated,
+      });
+
+      if (!activated) {
+        throw new Error(`falha ao ativar org ${orgID}: ${response.status} ${response.body}`);
+      }
+
+      console.log(`org de teste ${orgID} pronta para o teste k6`);
+    }
+
+    export default async function () {
+      const startedAt = Date.now();
+      let response;
+
+      try {
+        response = await sqs.sendMessage(
+          __ENV.SQS_QUEUE_URL || 'http://localstack:4566/000000000000/balance-sqs-queue',
+          JSON.stringify(buildMessage()),
+        );
+      } catch (error) {
+        errorRate.add(1);
+        check(null, { 'mensagem publicada no SQS': () => false });
+        console.error(`falha ao publicar mensagem: ${error}`);
+        return;
+      }
+
+      sendDuration.add(Date.now() - startedAt);
+      const success = check(response, {
+        'mensagem publicada no SQS': (result) => result && result.id,
+      });
+
+      errorRate.add(!success);
+      if (success) {
+        sentMessages.add(1);
+      }
+
+      sleep(1);
+    };
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k6-env
+data:
+  AWS_ENDPOINT: "http://localstack:4566"
+  AWS_REGION: "us-east-1"
+  AWS_ACCESS_KEY_ID: "k6-local-access-key"
+  AWS_SECRET_ACCESS_KEY: "k6-local-secret-key"
+  SQS_QUEUE_URL: "http://localstack:4566/000000000000/balance-sqs-queue"
+  LEDGER_CONFIG_URL: "http://ledger-config:5000"
+  TEST_ORG_ID: "TN-k6-load-test"
+  TEST_ACCOUNT_ID: "100000"
+  TEST_PROGRAM_ID: "12252"
+  TEST_PROCESSING_CODE: "101"

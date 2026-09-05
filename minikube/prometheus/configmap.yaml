@@ -14,6 +14,9 @@ data:
           - targets: ['otel:8888']
         metrics_path: '/metrics'
         scheme: 'http'
+      - job_name: 'k6'
+        static_configs:
+          - targets: ['k6-service:6565']
 
       # Opcional: adicione outros jobs para scrappar outros serviços (ex: stackport, redis, mysql, etc.)
       # - job_name: 'stackport'
