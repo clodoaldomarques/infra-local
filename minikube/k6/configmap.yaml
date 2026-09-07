@@ -1,6 +1,23 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: k6-env
+data:
+  AWS_ENDPOINT: "http://localstack:4566"
+  AWS_REGION: "us-east-1"
+  AWS_ACCESS_KEY_ID: "k6-local-access-key"
+  AWS_SECRET_ACCESS_KEY: "k6-local-secret-key"
+  SQS_QUEUE_URL: "http://localstack:4566/000000000000/balance-sqs-queue"
+  LEDGER_CONFIG_URL: "http://ledger-config:5000"
+  TEST_ORG_ID: "TN-k6-load-test"
+  TEST_ACCOUNT_ID: "100000"
+  TEST_PROGRAM_ID: "12252"
+  TEST_PROCESSING_CODE: "101"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: k6-script
 data:
   script.js: |
@@ -146,20 +163,3 @@ data:
 
       sleep(1);
     };
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: k6-env
-data:
-  AWS_ENDPOINT: "http://localstack:4566"
-  AWS_REGION: "us-east-1"
-  AWS_ACCESS_KEY_ID: "k6-local-access-key"
-  AWS_SECRET_ACCESS_KEY: "k6-local-secret-key"
-  SQS_QUEUE_URL: "http://localstack:4566/000000000000/balance-sqs-queue"
-  LEDGER_CONFIG_URL: "http://ledger-config:5000"
-  TEST_ORG_ID: "TN-k6-load-test"
-  TEST_ACCOUNT_ID: "100000"
-  TEST_PROGRAM_ID: "12252"
-  TEST_PROCESSING_CODE: "101"

@@ -23,7 +23,7 @@ spec:
           mountPath: /scripts
         env:
         - name: K6_OUT
-          value: "prometheus=http://prometheus:9090"  # Integração com Prometheus (opcional)
+          value: "experimental-prometheus-rw=http://prometheus:9090"  # Integração com Prometheus (opcional)
         envFrom:
         - configMapRef:
             name: k6-env
