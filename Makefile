@@ -33,7 +33,7 @@ apply:
 	kubectl apply -f minikube/zipkin/
 	kubectl apply -f minikube/mockserver/
 	kubectl apply -f minikube/grafana/
-	kubectl apply -f minikube/k6/
+
 
 destroy:
 	kubectl delete -f minikube/localstack/ --ignore-not-found
@@ -45,10 +45,14 @@ destroy:
 	kubectl delete -f minikube/zipkin/ --ignore-not-found
 	kubectl delete -f minikube/mockserver/ --ignore-not-found
 	kubectl delete -f minikube/grafana/ --ignore-not-found
-	kubectl delete -f minikube/k6/ --ignore-not-found
 
 reload: destroy apply
 
+k6-apply:
+	kubectl apply -f minikube/k6/
+
+k6-destroy:
+	kubectl delete -f minikube/k6/ --ignore-not-found
 
 k6-config:
 	kubectl apply -f minikube/k6/configmap.yaml
