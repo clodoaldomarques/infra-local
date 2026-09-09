@@ -33,7 +33,6 @@ apply:
 	kubectl apply -f minikube/zipkin/
 	kubectl apply -f minikube/mockserver/
 	kubectl apply -f minikube/grafana/
-	kubectl apply --server-side -f minikube/keda
 
 
 destroy:
@@ -46,7 +45,6 @@ destroy:
 	kubectl delete -f minikube/zipkin/ --ignore-not-found
 	kubectl delete -f minikube/mockserver/ --ignore-not-found
 	kubectl delete -f minikube/grafana/ --ignore-not-found
-	kubectl delete -f minikube/keda --ignore-not-found
 
 reload: destroy apply
 
@@ -62,9 +60,7 @@ k6-config:
 k6-run: k6-config
 	kubectl delete job k6-load-test --ignore-not-found
 	kubectl apply -f minikube/k6/job.yaml
+	kubectl logs -f job/k6-load-test
 
 k6-stop:
 	kubectl delete job k6-load-test --ignore-not-found
-
-k6-logs:
-	kubectl logs -f job/k6-load-test
