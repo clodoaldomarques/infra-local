@@ -33,6 +33,7 @@ apply:
 	kubectl apply -f minikube/zipkin/
 	kubectl apply -f minikube/mockserver/
 	kubectl apply -f minikube/grafana/
+	kubectl apply --server-side -f minikube/keda
 
 
 destroy:
@@ -45,6 +46,7 @@ destroy:
 	kubectl delete -f minikube/zipkin/ --ignore-not-found
 	kubectl delete -f minikube/mockserver/ --ignore-not-found
 	kubectl delete -f minikube/grafana/ --ignore-not-found
+	kubectl delete -f minikube/keda --ignore-not-found
 
 reload: destroy apply
 
