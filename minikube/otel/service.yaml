@@ -12,12 +12,13 @@ spec:
   - name: grpc
     port: 4317
     targetPort: 4317
-    nodePort: 30005
   - name: http
     port: 4318
     targetPort: 4318
-    # sem nodePort, fica como ClusterIP
   - name: metrics
     port: 8888
     targetPort: 8888
-    # sem nodePort
+    nodePort: 30005
+  - name: prometheus
+    port: 8889
+    targetPort: 8889

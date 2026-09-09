@@ -48,19 +48,16 @@ destroy:
 
 reload: destroy apply
 
-k6-apply:
-	kubectl apply -f minikube/k6/
 
-k6-destroy:
-	kubectl delete -f minikube/k6/ --ignore-not-found
-
-k6-config:
+k6-run:
 	kubectl apply -f minikube/k6/configmap.yaml
-
-k6-run: k6-config
+	kubectl apply -f minikube/k6/deployment.yaml
 	kubectl delete job k6-load-test --ignore-not-found
 	kubectl apply -f minikube/k6/job.yaml
 	kubectl logs -f job/k6-load-test
+	kubectl delete -f minikube/k6/ --ignore-not-found
 
 k6-stop:
-	kubectl delete job k6-load-test --ignore-not-found
+	kubectl delete -f minikube/k6/ --ignore-not-found
+
+k6-reload: k6-stop k6-run

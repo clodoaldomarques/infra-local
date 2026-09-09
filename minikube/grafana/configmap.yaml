@@ -12,6 +12,7 @@ data:
         access: proxy
         isDefault: true
 
+
   dashboards.yaml: |
     apiVersion: 1
     providers:

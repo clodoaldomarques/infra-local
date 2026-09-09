@@ -22,8 +22,9 @@ spec:
         ports:
         - containerPort: 4317
         - containerPort: 4318
-        - containerPort: 8888   # métricas do próprio collector (para o Prometheus scrappar)
-        - containerPort: 13133  # health check
+        - containerPort: 8888   
+        - containerPort: 8889   
+        - containerPort: 13133
         env:
         - name: POD_IP
           valueFrom:
