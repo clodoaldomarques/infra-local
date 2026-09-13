@@ -28,11 +28,13 @@ apply:
 	kubectl apply -f minikube/stackport/
 	kubectl apply -f minikube/mysql/
 	kubectl apply -f minikube/redis/
+	kubectl apply -f minikube/mockserver/
 	kubectl apply -f minikube/otel/
 	kubectl apply -f minikube/prometheus/
-	kubectl apply -f minikube/zipkin/
-	kubectl apply -f minikube/mockserver/
+	kubectl apply -f minikube/tempo/
+	kubectl apply -f minikube/loki/
 	kubectl apply -f minikube/grafana/
+
 
 
 destroy:
@@ -42,7 +44,6 @@ destroy:
 	kubectl delete -f minikube/redis/ --ignore-not-found
 	kubectl delete -f minikube/otel/ --ignore-not-found
 	kubectl delete -f minikube/prometheus/ --ignore-not-found
-	kubectl delete -f minikube/zipkin/ --ignore-not-found
 	kubectl delete -f minikube/mockserver/ --ignore-not-found
 	kubectl delete -f minikube/grafana/ --ignore-not-found
 

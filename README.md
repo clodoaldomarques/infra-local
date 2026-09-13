@@ -45,9 +45,9 @@ The environment is built around Minikube and Kubernetes.
                            ┌──────────────────────┐
                            │   Development Tools  │
                            │                      │
-                           │ MockServer            │
-                           │ StackPort             │
-                           │ Ollama                │
+                           │ MockServer           │
+                           │ StackPort            │
+                           │ Ollama               │
                            └──────────────────────┘
 ```
 
@@ -63,7 +63,8 @@ The Minikube environment currently provides the following components:
 | Redis | In-memory data store |
 | OpenTelemetry Collector | Telemetry collection |
 | Prometheus | Metrics collection |
-| Zipkin | Distributed tracing |
+| Loki | Logger collection |
+| Tempo | Distributed tracing |
 | Grafana | Observability dashboards |
 | MockServer | HTTP service mocking |
 | Ollama | Local AI model runtime |
@@ -82,9 +83,10 @@ minikube/
 ├── ollama/
 ├── otel/
 ├── prometheus/
+├── loki/
 ├── redis/
 ├── stackport/
-└── zipkin/
+└── tempo/
 ```
 
 This organization keeps each infrastructure component isolated and allows individual resources to be managed independently when necessary.
@@ -108,25 +110,41 @@ The exact AWS services enabled by the environment depend on the corresponding Lo
 The environment provides a local observability stack composed of:
 
 ```text
-                    Application
-                         │
-                         │
-                OpenTelemetry SDK
-                         │
-                         ▼
-                ┌─────────────────┐
-                │ OpenTelemetry   │
-                │    Collector    │
-                └────────┬────────┘
-                         │
-                  ┌──────┴───────┐
-                  │              │
-                  ▼              ▼
-             Prometheus        Zipkin
-                  │
-                  │
-                  ▼
-               Grafana
+                 ┌─────────────────────┐
+                 │    OTel Collector   │
+                 └──────────┬──────────┘
+                            │
+                ┌───────────┴───────────┐
+                │                       │
+                ▼                       ▼
+        ┌──────────────┐        ┌──────────────┐
+        │    Tempo     │        │     Loki     │
+        │   :3200      │        │    :3100     │
+        │              │        │              │
+        │ OTLP :4317   │        │ OTLP :3100   │
+        └──────┬───────┘        └──────┬───────┘
+               │                       │
+             PVC                     PVC
+               │                       │
+               ▼                       ▼
+           tempo-data              loki-data
+
+
+                    Grafana
+                       │
+          ┌────────────┼────────────┐
+          │            │            │
+          ▼            ▼            ▼
+     Prometheus      Tempo         Loki
+       :9090         :3200         :3100
+
+
+
+                    ┌──→ Prometheus
+                    │
+OTel Collector ─────┼──→ Tempo
+                    │
+                    └──→ Loki                  
 ```
 
 This allows local services to be developed with observability enabled from the beginning rather than adding telemetry only after deployment.
@@ -183,7 +201,8 @@ This applies the Kubernetes resources for:
 - Redis
 - OpenTelemetry
 - Prometheus
-- Zipkin
+- Tempo
+- Loki
 - MockServer
 - Grafana
 
@@ -261,24 +280,6 @@ Check the services:
 kubectl get services -A
 ```
 
-## Docker Compose
-
-Some local infrastructure can also be started independently using Docker Compose.
-
-Start the Compose environment:
-
-```bash
-make up
-```
-
-Stop it:
-
-```bash
-make down
-```
-
-The current Compose configuration provides the local Ollama runtime with persistent model storage.
-
 ## Design Goals
 
 The project was created around the following principles:
@@ -320,8 +321,9 @@ infra-local/
 │   ├── otel/
 │   ├── prometheus/
 │   ├── redis/
+│   ├── loki/
 │   ├── stackport/
-│   └── zipkin/
+│   └── tempo/
 │
 ├── docker-compose.yaml
 ├── Makefile
