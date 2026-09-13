@@ -11,7 +11,6 @@ data:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
-      # Receiver para coletar as métricas internas do próprio Collector
       prometheus:
         config:
           scrape_configs:
@@ -54,12 +53,12 @@ data:
           exporters: [debug, zipkin]
         
         metrics:
-          receivers: [otlp]
+          receivers: [otlp, prometheus]
           processors: [batch, memory_limiter]
           exporters: [debug, prometheus]
         
         metrics/internal:
-          receivers: [prometheus]
+          receivers: [otlp, prometheus]
           processors: [batch]
           exporters: [prometheus]
         

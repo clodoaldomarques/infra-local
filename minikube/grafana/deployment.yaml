@@ -55,7 +55,7 @@ spec:
           name: grafana-config
       - name: dashboards
         configMap:
-          name: grafana-dashboards   # ConfigMap gerado a partir dos JSONs
+          name: grafana-dashboards
       - name: storage
         persistentVolumeClaim:
           claimName: grafana-storage

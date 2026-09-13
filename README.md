@@ -123,12 +123,10 @@ The environment provides a local observability stack composed of:
                   │              │
                   ▼              ▼
              Prometheus        Zipkin
-                  │              │
-                  │              │
-                  └──────┬───────┘
-                         │
-                         ▼
-                     Grafana
+                  │
+                  │
+                  ▼
+               Grafana
 ```
 
 This allows local services to be developed with observability enabled from the beginning rather than adding telemetry only after deployment.
