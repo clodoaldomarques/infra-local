@@ -11,8 +11,6 @@ help:
 	@echo "  k6-logs     - Acompanha os logs do teste k6"
 	@echo "  k6-destroy  - Remove os recursos do teste k6"
 
-
-
 encrypt:
 	echo -n $(pass) | base64 
 
@@ -35,17 +33,17 @@ apply:
 	kubectl apply -f minikube/loki/
 	kubectl apply -f minikube/grafana/
 
-
-
 destroy:
 	kubectl delete -f minikube/localstack/ --ignore-not-found
 	kubectl delete -f minikube/stackport/ --ignore-not-found
 	kubectl delete -f minikube/mysql/ --ignore-not-found
 	kubectl delete -f minikube/redis/ --ignore-not-found
+	kubectl delete -f minikube/mockserver/ --ignore-not-found
 	kubectl delete -f minikube/otel/ --ignore-not-found
 	kubectl delete -f minikube/prometheus/ --ignore-not-found
-	kubectl delete -f minikube/mockserver/ --ignore-not-found
 	kubectl delete -f minikube/grafana/ --ignore-not-found
+	kubectl delete -f minikube/loki/ --ignore-not-found
+	kubectl delete -f minikube/tempo/ --ignore-not-found
 
 reload: destroy apply
 
