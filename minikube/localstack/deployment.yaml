@@ -36,19 +36,15 @@ spec:
         - name: AWS_DEFAULT_REGION
           value: us-east-1
         - name: SERVICES
-          value: sqs,sns,dynamodb
-        - name: PERSISTENCE
-          value: "1"
+          value: sqs,sns,dynamodb,s3
         - name: DATA_DIR
           value: /var/lib/localstack
         - name: LS_LOG
-          value: warn                    # Reduz logs (opções: trace, debug, info, warn, error)
+          value: warn
         - name: DEBUG
-          value: "0"                     # Mude para 1 se precisar debugar
-        - name: DISABLE_CORS_CHECKS
-          value: "1"                     # Opcional: desabilita CORS para dev
-        - name: SKIP_SIGNATURE_VALIDATION
-          value: "1"                     # Opcional: simplifica assinatura para dev
+          value: "0"
+        - name: EXTENSION_AUTO_INSTALL
+          value: "localstack-extension-platform-observability"
         ports:
         - name: edge
           containerPort: 4566
@@ -79,12 +75,18 @@ spec:
         volumeMounts:
         - name: localstack-storage
           mountPath: /var/lib/localstack
+        - name: init-scripts
+          mountPath: /etc/localstack/init/ready.d
         securityContext:
           runAsNonRoot: true
           runAsUser: 1000
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false   # LocalStack precisa escrever no /var/lib/localstack
+          readOnlyRootFilesystem: false
       volumes:
       - name: localstack-storage
         persistentVolumeClaim:
           claimName: localstack-claim
+      - name: init-scripts
+        configMap:
+          name: localstack-init-scripts
+          defaultMode: 0755

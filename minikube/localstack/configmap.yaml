@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: localstack-init-scripts
+data:
+  init-bucket.sh: |
+    #!/bin/bash
+    awslocal s3 mb s3://_extension
+  

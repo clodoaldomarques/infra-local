@@ -11,6 +11,11 @@ data:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+      mysql:
+        endpoint: mysql:3306
+        username: "root"
+        password: "${env:MYSQL_PASSWORD}"
+        collection_interval: 10s
 
     processors:
       memory_limiter:
@@ -22,52 +27,32 @@ data:
 
     exporters:
       debug:
-        verbosity: basic
-      otlp/tempo:
-        endpoint: tempo:4317
-        tls:
-          insecure: true
+        verbosity: normal
+
+      zipkin:
+        endpoint: "http://zipkin:9411/api/v2/spans"
+        format: "json"
+      
       prometheus:
         endpoint: 0.0.0.0:8889
         send_timestamps: true
         metric_expiration: 180m
         resource_to_telemetry_conversion:
           enabled: true
-      otlphttp/loki:
-        endpoint: http://loki:3100/otlp
 
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
 
     service:
-      extensions:
-        - health_check
+      extensions: [health_check]
       pipelines:
         traces:
-          receivers:
-            - otlp
-          processors:
-            - memory_limiter
-            - batch
-          exporters:
-            - otlp/tempo
-            - debug
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters: [zipkin, debug]
+
         metrics:
-          receivers:
-            - otlp
-          processors:
-            - memory_limiter
-            - batch
-          exporters:
-            - prometheus
-            - debug
-        logs:
-          receivers:
-            - otlp
-          processors:
-            - memory_limiter
-            - batch
-          exporters:
-            - otlphttp/loki
-            - debug
+          receivers: [otlp, mysql]
+          processors: [memory_limiter, batch]
+          exporters: [prometheus, debug]

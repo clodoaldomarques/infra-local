@@ -5,6 +5,9 @@ metadata:
   labels:
     com.job.service: otel
 spec:
+  type: NodePort
+  selector:
+    app: otel
   ports:
   - name: grpc
     port: 4317
@@ -15,3 +18,4 @@ spec:
   - name: metrics
     port: 8889
     targetPort: 8889
+    nodePort: 30005

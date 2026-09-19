@@ -30,6 +30,11 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: root
         volumeMounts:
         - name: config
           mountPath: /conf

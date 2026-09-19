@@ -21,6 +21,9 @@ start:
 stop: 
 	minikube stop
 
+status:
+	minikube status
+
 apply:
 	kubectl apply -f minikube/localstack/
 	kubectl apply -f minikube/stackport/
@@ -29,7 +32,7 @@ apply:
 	kubectl apply -f minikube/mockserver/
 	kubectl apply -f minikube/otel/
 	kubectl apply -f minikube/prometheus/
-	kubectl apply -f minikube/tempo/
+	kubectl apply -f minikube/zipkin/
 	kubectl apply -f minikube/loki/
 	kubectl apply -f minikube/grafana/
 
@@ -43,7 +46,7 @@ destroy:
 	kubectl delete -f minikube/prometheus/ --ignore-not-found
 	kubectl delete -f minikube/grafana/ --ignore-not-found
 	kubectl delete -f minikube/loki/ --ignore-not-found
-	kubectl delete -f minikube/tempo/ --ignore-not-found
+	kubectl delete -f minikube/zipkin/ --ignore-not-found
 
 reload: destroy apply
 
