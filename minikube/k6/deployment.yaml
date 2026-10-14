@@ -23,7 +23,13 @@ spec:
           mountPath: /scripts
         env:
         - name: K6_OUT
-          value: "experimental-prometheus-rw=http://prometheus:9090"
+          value: "opentelemetry"
+        - name: K6_OTEL_GRPC_EXPORTER_ENDPOINT
+          value: "otel:4317"
+        - name: K6_OTEL_GRPC_EXPORTER_INSECURE
+          value: "true"
+        - name: K6_OTEL_METRIC_PREFIX
+          value: "k6_"
         envFrom:
         - configMapRef:
             name: k6-env

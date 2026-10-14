@@ -59,6 +59,9 @@ k6-run:
 	kubectl logs -f job/k6-load-test
 	kubectl delete -f minikube/k6/ --ignore-not-found
 
+k6-logs:
+	kubectl logs -f job/k6-load-test
+
 k6-stop:
 	kubectl delete -f minikube/k6/ --ignore-not-found
 
