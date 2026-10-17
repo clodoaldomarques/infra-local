@@ -14,3 +14,8 @@ data:
           - targets: ['otel:8889']
         metrics_path: '/metrics'
         scheme: 'http'
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['prometheus:9090']
+        metrics_path: '/metrics'
+        scheme: 'http'
