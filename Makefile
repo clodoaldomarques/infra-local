@@ -24,6 +24,9 @@ stop:
 status:
 	minikube status
 
+dashboard:
+	minikube dashboard &
+
 apply:
 	kubectl apply -f minikube/localstack/
 	kubectl apply -f minikube/stackport/
